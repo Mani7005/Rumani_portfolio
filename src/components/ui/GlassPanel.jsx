@@ -1,0 +1,41 @@
+import { cn } from '@/lib/utils';
+
+/**
+ * GlassPanel — JARVIS-inspired HUD card surface.
+ * Dark translucent background, hairline cyan border, corner reticle marks,
+ * optional module label tag.
+ */
+export default function GlassPanel({
+  children,
+  className,
+  label,
+  active = false,
+  as: Component = 'div',
+  ...props
+}) {
+  return (
+    <Component
+      className={cn(
+        'relative rounded-sm border bg-panel/70 backdrop-blur-sm',
+        'border-glass-border shadow-card transition-all duration-300',
+        active && 'border-cyan-core/25 shadow-glow-cyan-sm',
+        className
+      )}
+      {...props}
+    >
+      {/* Corner reticle brackets */}
+      <span className="pointer-events-none absolute -left-px -top-px h-2.5 w-2.5 border-l border-t border-cyan-core/50" />
+      <span className="pointer-events-none absolute -right-px -top-px h-2.5 w-2.5 border-r border-t border-cyan-core/50" />
+      <span className="pointer-events-none absolute -bottom-px -left-px h-2.5 w-2.5 border-b border-l border-cyan-core/50" />
+      <span className="pointer-events-none absolute -bottom-px -right-px h-2.5 w-2.5 border-b border-r border-cyan-core/50" />
+
+      {label && (
+        <span className="pointer-events-none absolute -top-2 left-3 bg-void px-1 font-mono text-[9px] tracking-[0.25em] text-cyan-core/50 uppercase">
+          {label}
+        </span>
+      )}
+
+      {children}
+    </Component>
+  );
+}
