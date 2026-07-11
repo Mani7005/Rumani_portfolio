@@ -13,7 +13,7 @@ import TechBadge from './TechBadge';
 function Section({ label, children }) {
   return (
     <div className="border-l border-cyan-core/20 pl-4">
-      <p className="font-mono text-[9px] tracking-[0.3em] text-cyan-core/60 uppercase">// {label}</p>
+      <p className="font-mono text-[9px] tracking-[0.06em] text-ink-muted/70 uppercase">// {label}</p>
       <div className="mt-2">{children}</div>
     </div>
   );
@@ -101,13 +101,13 @@ export default function ProjectDossier({ project, onClose }) {
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-glass-border px-6 py-5 sm:px-8">
           <div>
-            <p className="font-mono text-[9px] tracking-[0.3em] text-cyan-core/60 uppercase">
+            <p className="font-mono text-[9px] tracking-[0.06em] text-ink-muted/70 uppercase">
               // CLASSIFIED ENGINEERING RECORD
             </p>
             <h3 className="mt-1 font-display text-2xl text-ink-primary sm:text-3xl">{project.name}</h3>
             <div className="mt-2 flex flex-wrap items-center gap-3">
               <ProjectStatus status={project.status} />
-              <span className="font-mono text-[9px] tracking-[0.2em] text-ink-muted uppercase">{project.type}</span>
+              <span className="font-mono text-[9px] tracking-[0.08em] text-ink-muted uppercase">{project.type}</span>
             </div>
           </div>
           <button

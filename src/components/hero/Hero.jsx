@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { FiArrowRight, FiDownload, FiGithub, FiMail } from 'react-icons/fi';
+import { FiArrowRight, FiDownload, FiLinkedin, FiGithub, FiMail } from 'react-icons/fi';
 import HUDCore from '@/components/ui/HUDCore';
 import Button from '@/components/ui/Button';
 import HeroScene from './HeroScene';
@@ -17,30 +17,17 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } },
 };
 
-const CAPABILITIES = [
-  { lead: 'Building', highlight: 'AI Systems,' },
-  { lead: '', highlight: 'Distributed Infra,' },
-  { lead: '', highlight: 'Developer Tools.' },
-];
+const INTRODUCTION = `
+I'm a Computer Engineering student passionate about building AI-powered applications,
+distributed backend systems, and developer tools. I enjoy solving real-world problems
+through full-stack development, machine learning, and scalable system design.
+Currently seeking Software Engineering and AI internship opportunities.
+`;
 
 export default function Hero() {
   return (
     <section id="hero" className="relative min-h-screen overflow-hidden">
-      {/* Top system bar — mirrors JARVIS's top status strip */}
-      <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between border-b border-line px-6 py-4 sm:px-12 lg:px-20">
-        <span className="font-mono text-[9px] tracking-[0.35em] text-ink-muted uppercase">
-          SYS:RUMANI-OS · BUILD 2025
-        </span>
-        <div className="flex items-center gap-4">
-          <span className="hidden sm:flex items-center gap-1.5 font-mono text-[9px] tracking-[0.3em] text-status-ok/80 uppercase">
-            <span className="h-1 w-1 rounded-full bg-status-ok animate-pulse-glow" />
-            ALL_SYSTEMS_NOMINAL
-          </span>
-          <span className="font-mono text-[9px] tracking-[0.3em] text-ink-muted/50 uppercase">
-            UTC {new Date().toUTCString().slice(17, 22)}
-          </span>
-        </div>
-      </div>
+      
 
       {/* Grid overlay */}
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-100" />
@@ -49,7 +36,7 @@ export default function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(45,212,232,0.05)_0%,transparent_70%)]" />
 
       {/* Two-column grid */}
-      <div className="relative grid min-h-screen grid-cols-1 pt-14 lg:grid-cols-2">
+      <div className="relative grid min-h-screen grid-cols-1 lg:grid-cols-2">
 
         {/* LEFT — 3D AI Core scene */}
         <div className="relative flex min-h-[52vh] items-center justify-center lg:min-h-screen">
@@ -75,15 +62,15 @@ export default function Hero() {
           <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-px bg-gradient-to-b from-transparent via-cyan-core/10 to-transparent lg:block" />
 
           {/* Corner labels */}
-          <span className="pointer-events-none absolute bottom-8 left-6 font-mono text-[8px] tracking-[0.3em] text-ink-muted/40 uppercase">
+          <span className="pointer-events-none absolute bottom-8 left-6 font-mono text-[8px] tracking-[0.06em] text-ink-muted/40 uppercase">
             AI_CORE · ACTIVE
           </span>
-          <span className="pointer-events-none absolute bottom-8 right-8 hidden font-mono text-[8px] tracking-[0.3em] text-ink-muted/40 uppercase lg:block">
+          <span className="pointer-events-none absolute bottom-8 right-8 hidden font-mono text-[8px] tracking-[0.06em] text-ink-muted/40 uppercase lg:block">
             MODULE_01
           </span>
 
           {/* Edge vignette — blends scene into page */}
-          
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,#03060A_90%)]" />
         </div>
 
         {/* RIGHT — Identity & CTAs */}
@@ -91,10 +78,10 @@ export default function Hero() {
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="relative z-10 flex flex-col justify-center gap-10 px-6 py-16 sm:px-12 lg:px-14 lg:py-24"
+          className="relative z-9 flex flex-col justify-center gap-8 px-6 py-4 sm:px-12 lg:px-14 lg:py-4"
         >
           {/* Eyebrow */}
-          <motion.p variants={itemVariants} className="font-mono text-[9px] tracking-[0.45em] text-cyan-core/60 uppercase">
+          <motion.p variants={itemVariants} className="font-mono text-[9px] tracking-[0.18em] text-ink-muted uppercase">
             // PORTFOLIO_OS · BOOT_COMPLETE
           </motion.p>
 
@@ -110,63 +97,44 @@ export default function Hero() {
             </motion.h1>
             <motion.p
               variants={itemVariants}
-              className="font-mono text-[10px] tracking-[0.4em] text-ink-muted uppercase"
+              className="font-mono text-[10px] tracking-[0.16em] text-ink-muted uppercase"
             >
               Software Engineer
             </motion.p>
           </div>
 
-          {/* Capabilities list — JARVIS-style numbered */}
-          <motion.div
-            variants={itemVariants}
-            className="space-y-2 border-l border-cyan-core/20 pl-5"
-          >
-            {CAPABILITIES.map((line, i) => (
-              <p key={line.highlight} className="flex items-baseline gap-2 font-display text-lg text-ink-primary sm:text-xl">
-                <span className="font-mono text-[9px] tracking-widest text-cyan-core/40 shrink-0">
-                  0{i + 1}
-                </span>
-                {line.lead && <span className="text-ink-secondary mr-1">{line.lead}</span>}
-                <span className="text-cyan-core text-glow-sm">{line.highlight}</span>
-              </p>
-            ))}
-          </motion.div>
+          <div className="max-w-xl mt-3">
+                 <p className="text-[1.15rem] md:text-[1.2rem] leading-[2rem] text-slate-200">
+                  {INTRODUCTION}
+                 </p>
+          </div>
 
           {/* CTA buttons */}
           <motion.div variants={itemVariants} className="flex flex-wrap gap-2.5">
             <Button href="#projects" variant="primary" icon={FiArrowRight}>
               Explore Projects
             </Button>
-            <Button href="/resume.pdf" variant="outline" icon={FiDownload}>
+            <Button href="/Dadyala_rumani...pdf" variant="outline" icon={FiDownload}>
               Resume
             </Button>
-            <Button href="https://github.com/" variant="outline" icon={FiGithub}>
+            <Button href="https://github.com/Mani7005" variant="outline" icon={FiGithub}>
               GitHub
             </Button>
-            <Button href="#contact" variant="ghost" icon={FiMail}>
+            <Button
+               href="https://www.linkedin.com/in/rumani-dadyala-421a56313"
+               variant="outline"
+               icon={FiLinkedin}
+            >
+               LinkedIn
+            </Button>
+            <Button href="mailto:rumanidadyala@gmail.com" variant="ghost" icon={FiMail}>
               Contact
             </Button>
           </motion.div>
 
-          {/* Status + project list */}
-          <div className="flex flex-col gap-4 pt-1">
-            <StatusPanel variants={itemVariants} className="w-fit" />
-            <ProjectTicker variants={itemVariants} />
-          </div>
+          
 
-          {/* Bottom meta row */}
-          <motion.div
-            variants={itemVariants}
-            className="flex items-center gap-4 border-t border-line pt-6"
-          >
-            <div className="flex items-center gap-3">
-              {['React', 'Go', 'Rust', 'Python'].map((t) => (
-                <span key={t} className="font-mono text-[8px] tracking-[0.25em] text-ink-muted/60 uppercase">{t}</span>
-              ))}
-            </div>
-            <div className="ml-auto h-px flex-1 bg-line" />
-            <span className="font-mono text-[8px] tracking-[0.25em] text-ink-muted/50 uppercase shrink-0">Est. 2022</span>
-          </motion.div>
+          
         </motion.div>
       </div>
 

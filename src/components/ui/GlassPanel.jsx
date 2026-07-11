@@ -29,11 +29,7 @@ export default function GlassPanel({
       <span className="pointer-events-none absolute -bottom-px -left-px h-2.5 w-2.5 border-b border-l border-cyan-core/50" />
       <span className="pointer-events-none absolute -bottom-px -right-px h-2.5 w-2.5 border-b border-r border-cyan-core/50" />
 
-      {label && (
-        <span className="pointer-events-none absolute -top-2 left-3 bg-void px-1 font-mono text-[9px] tracking-[0.25em] text-cyan-core/50 uppercase">
-          {label}
-        </span>
-      )}
+      
 
       {children}
     </Component>

@@ -15,12 +15,7 @@ export const navigationData = [
     href: "#hero",
     icon: FiHome,
   },
-  {
-    id: "mission",
-    label: "MISSION",
-    href: "#mission",
-    icon: FiFlag,
-  },
+  
   {
     id: "projects",
     label: "PROJECTS",

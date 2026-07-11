@@ -43,14 +43,14 @@ export default function App() {
       <NavigationRail booted={booted} />
 
       {booted && (
-        <>
+        <div className="pt-16">
           <Hero />
           <Terminal />
           <Projects />
           <Skills />
           <Timeline />
           <Communication />
-        </>
+        </div>
       )}
     </>
   );

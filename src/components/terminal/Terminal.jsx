@@ -145,7 +145,7 @@ export default function Terminal() {
             <div className="flex items-center justify-between border-b border-glass-border px-5 py-3">
               <div className="flex items-center gap-2.5 font-mono text-[9px] tracking-[0.3em] text-ink-muted uppercase">
                 <FiTerminal className="h-3 w-3 text-cyan-core" />
-                RUMANI_OS // TERMINAL
+                COMMAND_CENTER // TERMINAL
               </div>
               <div className="flex items-center gap-4">
                 <span className="flex items-center gap-1.5 font-mono text-[8px] tracking-[0.3em] text-status-ok/80 uppercase">

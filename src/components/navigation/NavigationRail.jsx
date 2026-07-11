@@ -4,22 +4,39 @@ import { MdMenu, MdClose } from 'react-icons/md';
 import { navigationData } from './navigationData';
 import NavItem from './NavItem';
 
+/**
+ * NavigationRail
+ * ---------------
+ * Desktop: fixed horizontal top bar (was a left-side vertical rail).
+ * Mobile: unchanged — same floating hamburger button + popover menu as
+ * before; it doesn't use NavItem and didn't need to change at all.
+ *
+ * Reused as-is from the previous version: navigationData, the
+ * active-section scroll-detection logic, handleNavClick's smooth-scroll
+ * behavior, the resize-driven isMobile switch, and the boot-gate
+ * (`if (!booted) return null`). Only the desktop branch's markup and the
+ * scroll handler (extended to also track `scrolled`, see below) changed.
+ */
 export default function NavigationRail({ booted }) {
   const [activeSection, setActiveSection] = useState('home');
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [scrolled, setScrolled] = useState(false);
 
-  // Track active section on scroll
+  // Track active section on scroll — same logic as before, now also sets
+  // `scrolled` (single listener doing both jobs rather than two).
   useEffect(() => {
     const handleScroll = () => {
-      const sections = navigationData.map(item => item.href.slice(1));
-      
+      setScrolled(window.scrollY > 24);
+
+      const sections = navigationData.map((item) => item.href.slice(1));
+
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
           const rect = element.getBoundingClientRect();
           if (rect.top <= 100 && rect.bottom >= 100) {
-            setActiveSection(navigationData.find(item => item.href.slice(1) === section)?.id || 'home');
+            setActiveSection(navigationData.find((item) => item.href.slice(1) === section)?.id || 'home');
             break;
           }
         }
@@ -54,32 +71,52 @@ export default function NavigationRail({ booted }) {
 
   if (!booted) return null;
 
-  // Desktop Navigation Rail
+  // Desktop: fixed horizontal top bar
   if (!isMobile) {
     return (
       <motion.nav
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}
-        className="fixed left-6 top-1/2 z-40 -translate-y-1/2 hidden md:block"
+        className="fixed inset-x-0 top-0 z-50 hidden md:block"
       >
-        <div className="rounded-lg border border-cyan-core/20 bg-gradient-to-b from-panel/40 to-panel/20 backdrop-blur-md p-3 shadow-lg">
-          <div className="flex flex-col gap-1">
-            {navigationData.map((item) => (
-              <NavItem
-                key={item.id}
-                item={item}
-                isActive={activeSection === item.id}
-                onClick={() => handleNavClick(item)}
-              />
-            ))}
+        <div
+          className={`border-b backdrop-blur-md transition-colors duration-300 ${
+            scrolled ? 'border-cyan-core/25 bg-panel/80' : 'border-cyan-core/10 bg-panel/40'
+          }`}
+        >
+          <div className="relative mx-auto flex h-16 max-w-7xl items-center px-6">
+            {/* Left — system tag */}
+            <div className="flex shrink-0 items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-cyan-core/80">
+              <span className="h-1.5 w-1.5 rounded-full bg-status-ok animate-pulse-glow" />
+              SYS::COMMAND_CENTER
+            </div>
+
+            {/* Center — absolutely centered so it stays centered
+               regardless of the left/right content widths */}
+            <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1">
+              {navigationData.map((item) => (
+                <NavItem
+                  key={item.id}
+                  item={item}
+                  isActive={activeSection === item.id}
+                  onClick={() => handleNavClick(item)}
+                />
+              ))}
+            </div>
+
+            {/* Right — system status */}
+            <div className="ml-auto hidden shrink-0 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-status-ok lg:flex">
+              <span className="h-1.5 w-1.5 rounded-full bg-status-ok animate-pulse-glow" />
+              All Systems Nominal
+            </div>
           </div>
         </div>
       </motion.nav>
     );
   }
 
-  // Mobile Floating Menu
+  // Mobile Floating Menu — unchanged from the previous version
   return (
     <>
       {/* Floating Menu Button */}

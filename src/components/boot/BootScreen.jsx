@@ -101,7 +101,7 @@ export default function BootScreen({ onComplete }) {
       {/* Top system bar */}
       <div className="absolute top-0 inset-x-0 flex items-center justify-between px-6 py-4 border-b border-line">
         <span className="font-mono text-[9px] tracking-[0.35em] text-ink-muted uppercase">
-          SYS:PORTFOLIO · BUILD 2025
+          SYS:COMMAND_CENTER · BUILD 2025
         </span>
         <span className="font-mono text-[9px] tracking-[0.35em] text-status-ok/70 uppercase flex items-center gap-1.5">
           <span className="h-1 w-1 rounded-full bg-status-ok animate-pulse-glow" />
@@ -135,9 +135,13 @@ export default function BootScreen({ onComplete }) {
               exit={{ opacity: 0, transition: { duration: 0.25 } }}
             >
               <div className="space-y-3">
-                <h1 className="font-display text-5xl tracking-[0.12em] text-ink-primary md:text-7xl">
-                  PORTFOLIO&nbsp;<GlowText className="text-4xl md:text-7xl"></GlowText>
+                 <h1 className="font-display text-5xl leading-none tracking-[0.12em] text-ink-primary md:text-7xl">
+                   COMMAND
                 </h1>
+
+                  <h1 className="font-display text-5xl leading-none tracking-[0.12em] text-cyan-core md:text-7xl text-glow">
+                       CENTER
+                  </h1>
                 <p className="font-mono text-[9px] tracking-[0.45em] text-ink-muted uppercase flex items-center justify-center gap-2">
                   <span className="h-1 w-1 rounded-full bg-status-idle animate-pulse-glow" />
                   SYSTEM OFFLINE · PRESS TO INITIALIZE
@@ -173,7 +177,7 @@ export default function BootScreen({ onComplete }) {
       {/* Bottom bar */}
       <div className="absolute bottom-0 inset-x-0 flex items-center justify-between px-6 py-4 border-t border-line">
         <span className="font-mono text-[8px] tracking-[0.3em] text-ink-muted/50 uppercase">
-          PORTFOLIO_OS · RUMANI DADYALA
+          COMMAND_CENTER · RUMANI DADYALA
         </span>
         <span className="font-mono text-[8px] tracking-[0.3em] text-ink-muted/50 uppercase">
           SOFTWARE ENGINEER
