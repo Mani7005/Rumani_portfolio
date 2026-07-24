@@ -49,7 +49,7 @@ export default function Hero() {
 
           {/* Background HUD rings — parallax on scroll */}
           <motion.div
-            style={{ y: ringY, opacity: ringOpacity }}
+            style={{opacity:0.5}}
             className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           >
             <HUDCore
