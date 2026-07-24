@@ -31,8 +31,8 @@ export default function SkillModule({ module, index }) {
         active={hovered}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        whileHover={{ y: -2 }}
-        transition={{ duration: 0.15 }}
+        whileHover={{ y: -4 }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="group relative h-full overflow-hidden cursor-default"
       >
         {/* scan line — on hover, matching ProjectCard's HUD treatment */}

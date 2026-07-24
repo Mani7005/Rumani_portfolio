@@ -36,9 +36,9 @@ export default function Button({
         VARIANTS[variant],
         className
       )}
-      whileHover={{ y: -1 }}
+      whileHover={{ y: -2 }}
       whileTap={{ y: 0, scale: 0.98 }}
-      transition={{ duration: 0.12 }}
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
       {...linkProps}
       {...props}
     >

@@ -125,7 +125,7 @@ export default function Terminal() {
             </p>
           </div>
           <span className="hidden font-mono text-[8px] tracking-[0.3em] text-ink-muted/40 uppercase sm:block">
-            02 / 03
+            02 / 06
           </span>
         </div>
 
@@ -133,7 +133,7 @@ export default function Terminal() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
           <GlassPanel
             label="AI_CONSOLE"

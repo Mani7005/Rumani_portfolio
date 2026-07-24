@@ -39,8 +39,8 @@ export default function TimelineNode({ event }) {
         active={hovered}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        whileHover={{ y: -2, scale: 1.01 }}
-        transition={{ duration: 0.18 }}
+        whileHover={{ y: -4 }}
+        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="relative mb-1 overflow-hidden p-5 sm:p-6"
       >
         <div className="mb-2 flex flex-wrap items-center gap-2">
