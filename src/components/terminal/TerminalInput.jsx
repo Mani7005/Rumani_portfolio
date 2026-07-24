@@ -1,6 +1,16 @@
+import { useCallback, memo } from 'react';
 import { cn } from '@/lib/utils';
 
-export default function TerminalInput({
+/**
+ * TerminalInput
+ * -------------
+ * Wrapped in React.memo + useCallback on all handlers.
+ * Terminal.jsx re-renders on every keystroke (value state), every entry
+ * appended (entries state), and on soundOn toggle. Without memo/useCallback,
+ * all handlers were recreated and the child re-rendered on every keystroke
+ * even when only the parent's entries list changed.
+ */
+const TerminalInput = memo(function TerminalInput({
   value,
   onChange,
   onSubmit,
@@ -10,7 +20,7 @@ export default function TerminalInput({
   hasError,
   inputRef,
 }) {
-  const handleKeyDown = (e) => {
+  const handleKeyDown = useCallback((e) => {
     if (e.key === 'ArrowUp') {
       e.preventDefault();
       onArrowUp();
@@ -20,11 +30,18 @@ export default function TerminalInput({
     } else if (e.key.length === 1) {
       onKeyStroke?.();
     }
-  };
+  }, [onArrowUp, onArrowDown, onKeyStroke]);
+
+  const handleChange = useCallback((e) => onChange(e.target.value), [onChange]);
+
+  const handleSubmit = useCallback((e) => {
+    e.preventDefault();
+    onSubmit();
+  }, [onSubmit]);
 
   return (
     <form
-      onSubmit={(e) => { e.preventDefault(); onSubmit(); }}
+      onSubmit={handleSubmit}
       className="flex items-center gap-2"
     >
       <span className="shrink-0 font-mono text-[11px] tracking-wider text-cyan-core/60">AI//</span>
@@ -33,7 +50,7 @@ export default function TerminalInput({
         <input
           ref={inputRef}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
           spellCheck={false}
           autoComplete="off"
@@ -56,4 +73,6 @@ export default function TerminalInput({
       </div>
     </form>
   );
-}
+});
+
+export default TerminalInput;

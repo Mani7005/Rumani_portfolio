@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { motion } from 'framer-motion';
 import GlassPanel from '@/components/ui/GlassPanel';
 import SkillBadge from './SkillBadge';
 import StatusIndicator from './StatusIndicator';
 import ActivityIndicator from './ActivityIndicator';
+
+// Hoisted at module scope — stable transition object shared by all cards.
+const HOVER_TRANSITION = { duration: 0.3, ease: [0.22, 1, 0.36, 1] };
+const HOVER_Y = { y: -4 };
 
 /**
  * SkillModule
@@ -19,20 +23,38 @@ import ActivityIndicator from './ActivityIndicator';
  * Framer-Motion-inline-transform conflict on the same node — animations
  * and inline styles both target `transform`, and mixing them on one
  * element causes exactly the kind of jitter this sidesteps.
+ *
+ * Performance notes:
+ *  - animationDelay style objects hoisted — buildFloatStyle avoids inline
+ *    `{}` creation on every render for each card.
+ *  - onMouseEnter/Leave wrapped in useCallback so GlassPanel (as motion.div)
+ *    doesn't receive new function references on re-render.
+ *  - Wrapped in React.memo: Skills.jsx never passes new props after mount,
+ *    so memoization prevents re-renders during sibling hover events.
  */
-export default function SkillModule({ module, index }) {
+
+// Pre-compute one style object per possible index position.
+// skillsData has 5 items — build 8 to be safe.
+const FLOAT_STYLES = Array.from({ length: 8 }, (_, i) => ({
+  animationDelay: `${i * 0.35}s`,
+}));
+
+const SkillModule = memo(function SkillModule({ module, index }) {
   const [hovered, setHovered] = useState(false);
 
+  const handleMouseEnter = useCallback(() => setHovered(true), []);
+  const handleMouseLeave = useCallback(() => setHovered(false), []);
+
   return (
-    <div className="animate-float" style={{ animationDelay: `${index * 0.35}s` }}>
+    <div className="animate-float" style={FLOAT_STYLES[index] ?? FLOAT_STYLES[0]}>
       <GlassPanel
         as={motion.div}
         label={`SYS_0${index + 1}`}
         active={hovered}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        whileHover={{ y: -4 }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        whileHover={HOVER_Y}
+        transition={HOVER_TRANSITION}
         className="group relative h-full overflow-hidden cursor-default"
       >
         {/* scan line — on hover, matching ProjectCard's HUD treatment */}
@@ -80,4 +102,6 @@ export default function SkillModule({ module, index }) {
       </GlassPanel>
     </div>
   );
-}
+});
+
+export default SkillModule;

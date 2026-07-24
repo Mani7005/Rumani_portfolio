@@ -101,7 +101,7 @@ export default function BootScreen({ onComplete }) {
       {/* Top system bar */}
       <div className="absolute top-0 inset-x-0 flex items-center justify-between px-6 py-4 border-b border-line">
         <span className="font-mono text-[9px] tracking-[0.35em] text-ink-muted uppercase">
-          SYS:COMMAND_CENTER · BUILD 2025
+          SYS:COMMAND_CENTER · BUILD 2026
         </span>
         <span className="font-mono text-[9px] tracking-[0.35em] text-status-ok/70 uppercase flex items-center gap-1.5">
           <span className="h-1 w-1 rounded-full bg-status-ok animate-pulse-glow" />

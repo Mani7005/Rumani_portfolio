@@ -2,6 +2,25 @@ import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { theme } from '@/config/theme';
 
+/**
+ * Geometry arg arrays hoisted to module scope.
+ * R3F geometry constructors compare args by array reference — new inline
+ * arrays on every render force unnecessary geometry rebuilds.
+ */
+const SHELL_ARGS = [1.5, 1];
+const CORE_ARGS = [0.52, 2];
+const HALO_ARGS = [1.05, 0.009, 16, 100];
+const RING2_ARGS = [1.22, 0.006, 16, 100];
+const RING3_ARGS = [0.8, 0.005, 16, 100];
+
+/**
+ * Static mesh rotations — hoisted so R3F doesn't see new Euler objects
+ * on every reconcile pass for elements that never change rotation.
+ */
+const HALO_ROTATION  = [Math.PI / 2.4, 0, 0];
+const RING2_ROTATION = [Math.PI / 2.4, 0, Math.PI / 3];
+const RING3_ROTATION = [0, 0, Math.PI / 4];
+
 export default function HeroRobot() {
   const group = useRef();
   const core = useRef();
@@ -29,13 +48,13 @@ export default function HeroRobot() {
     <group ref={group}>
       {/* Outer wireframe shell — softer opacity */}
       <mesh ref={shell}>
-        <icosahedronGeometry args={[1.5, 1]} />
+        <icosahedronGeometry args={SHELL_ARGS} />
         <meshBasicMaterial color={theme.colors.cyanCore} wireframe transparent opacity={0.22} />
       </mesh>
 
       {/* Inner emissive core */}
       <mesh ref={core}>
-        <icosahedronGeometry args={[0.52, 2]} />
+        <icosahedronGeometry args={CORE_ARGS} />
         <meshStandardMaterial
           color={theme.colors.cyanCore}
           emissive={theme.colors.cyanCore}
@@ -46,20 +65,20 @@ export default function HeroRobot() {
       </mesh>
 
       {/* Primary halo ring */}
-      <mesh rotation={[Math.PI / 2.4, 0, 0]}>
-        <torusGeometry args={[1.05, 0.009, 16, 100]} />
+      <mesh rotation={HALO_ROTATION}>
+        <torusGeometry args={HALO_ARGS} />
         <meshBasicMaterial color={theme.colors.blueDeep} transparent opacity={0.5} />
       </mesh>
 
       {/* Secondary ring */}
-      <mesh rotation={[Math.PI / 2.4, 0, Math.PI / 3]}>
-        <torusGeometry args={[1.22, 0.006, 16, 100]} />
+      <mesh rotation={RING2_ROTATION}>
+        <torusGeometry args={RING2_ARGS} />
         <meshBasicMaterial color={theme.colors.cyanCore} transparent opacity={0.2} />
       </mesh>
 
       {/* Third ring — subtle */}
-      <mesh rotation={[0, 0, Math.PI / 4]}>
-        <torusGeometry args={[0.8, 0.005, 16, 100]} />
+      <mesh rotation={RING3_ROTATION}>
+        <torusGeometry args={RING3_ARGS} />
         <meshBasicMaterial color={theme.colors.cyanCore} transparent opacity={0.15} />
       </mesh>
     </group>

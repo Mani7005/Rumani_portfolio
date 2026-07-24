@@ -1,12 +1,27 @@
+import { memo } from 'react';
 import { cn } from '@/lib/utils';
 
+/**
+ * HUDCore
+ * -------
+ * SVG ring cluster used in both BootScreen (re-renders at ~60fps during
+ * boot) and Hero (static after mount). Wrapped in React.memo so BootScreen's
+ * rAF-driven elapsed state changes don't cause HUDCore to reconcile on
+ * every frame — it receives no props that change during the boot animation
+ * (size="lg", progress changes but only affects the arc dash, not the DOM
+ * structure).
+ *
+ * Computed values (circumference, dash, tick mark coordinates) are derived
+ * from props and are cheap arithmetic; no additional memoization needed for
+ * them — they're already only re-run when memo allows a re-render through.
+ */
 const SIZE_MAP = {
   sm: 32,
   md: 220,
   lg: 320,
 };
 
-export default function HUDCore({ size = 'md', progress = null, className }) {
+const HUDCore = memo(function HUDCore({ size = 'md', progress = null, className }) {
   const px = SIZE_MAP[size];
   const r = { sm: 12, md: 94, lg: 138 }[size];
   const circumference = 2 * Math.PI * r;
@@ -121,4 +136,6 @@ export default function HUDCore({ size = 'md', progress = null, className }) {
       )}
     </div>
   );
-}
+});
+
+export default HUDCore;

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useCallback, useMemo, memo } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from 'framer-motion';
 import { FiGithub, FiExternalLink, FiFolder } from 'react-icons/fi';
 import GlassPanel from '@/components/ui/GlassPanel';
@@ -8,7 +8,27 @@ import TechBadge from './TechBadge';
 import { usePrefersReducedMotion } from '@/lib/usePrefersReducedMotion';
 
 const TILT_MAX = 7; // degrees
-const LIFT = -6; // px on hover
+const LIFT = -6;    // px on hover
+
+// Hoisted spring config — shared by all ProjectCard instances.
+const SPRING_CFG = { stiffness: 280, damping: 24, mass: 0.5 };
+const POINTER_SPRING = { stiffness: 150, damping: 18, mass: 0.4 };
+const CARD_TRANSITION_REDUCED = { duration: 0.15 };
+const CARD_TRANSITION_SPRING = { type: 'spring', ...SPRING_CFG };
+
+// Static variant states for the "rest" position — hoisted and shared.
+// The "hover" state's delay is the only per-badge difference, so we build
+// a lookup of up to 20 pre-computed hover variants (enough for any project).
+const TECH_REST = { opacity: 0.85, y: 0, scale: 1 };
+const TECH_HOVER_VARIANTS = Array.from({ length: 20 }, (_, i) => ({
+  rest: TECH_REST,
+  hover: {
+    opacity: 1,
+    y: -2,
+    scale: 1.04,
+    transition: { delay: i * 0.04, type: 'spring', stiffness: 400, damping: 18 },
+  },
+}));
 
 /**
  * ProjectCard
@@ -18,8 +38,17 @@ const LIFT = -6; // px on hover
  * lighting, individually animated tech chips, and spring-eased hover.
  * All effects are transform/opacity-only (GPU accelerated) and disabled
  * entirely when prefers-reduced-motion is set.
+ *
+ * Performance notes:
+ *  - TECH_HOVER_VARIANTS pre-computed at module scope: was creating a new
+ *    variants object per tech badge per render (up to ~8 objects × N renders).
+ *  - Spring config objects hoisted to module scope.
+ *  - Pointer/hover handlers stabilized with useCallback.
+ *  - Wrapped in React.memo: Projects.jsx list re-renders on activeId change
+ *    (dossier open/close) — memo prevents all cards from re-rendering when
+ *    only one dossier opens.
  */
-export default function ProjectCard({ project, index, onOpenDossier }) {
+const ProjectCard = memo(function ProjectCard({ project, index, onOpenDossier }) {
   const reduceMotion = usePrefersReducedMotion();
   const [hovered, setHovered] = useState(false);
 
@@ -28,8 +57,8 @@ export default function ProjectCard({ project, index, onOpenDossier }) {
   const py = useMotionValue(0.5);
 
   // Springs smooth the raw pointer into eased tilt/light values.
-  const sx = useSpring(px, { stiffness: 150, damping: 18, mass: 0.4 });
-  const sy = useSpring(py, { stiffness: 150, damping: 18, mass: 0.4 });
+  const sx = useSpring(px, POINTER_SPRING);
+  const sy = useSpring(py, POINTER_SPRING);
 
   // 3D tilt — rotate around Y based on horizontal pointer, X based on vertical.
   const rotateY = useTransform(sx, [0, 1], [TILT_MAX, -TILT_MAX]);
@@ -50,23 +79,42 @@ export default function ProjectCard({ project, index, onOpenDossier }) {
   const lightY = useTransform(sy, [0, 1], ['10%', '90%']);
   const lightBg = useMotionTemplate`radial-gradient(circle at ${lightX} ${lightY}, rgba(45,212,232,0.10), transparent 50%)`;
 
-  const handlePointerMove = (e) => {
+  const handlePointerMove = useCallback((e) => {
     if (reduceMotion) return;
     const rect = e.currentTarget.getBoundingClientRect();
     px.set((e.clientX - rect.left) / rect.width);
     py.set((e.clientY - rect.top) / rect.height);
-  };
+  }, [reduceMotion, px, py]);
 
-  const handlePointerEnter = () => {
+  const handlePointerEnter = useCallback(() => {
     setHovered(true);
-  };
+  }, []);
 
-  const handlePointerLeave = (e) => {
+  const handlePointerLeave = useCallback(() => {
     setHovered(false);
     if (reduceMotion) return;
     px.set(0.5);
     py.set(0.5);
-  };
+  }, [reduceMotion, px, py]);
+
+  const handleOpenDossier = useCallback(() => {
+    onOpenDossier(project.id);
+  }, [onOpenDossier, project.id]);
+
+  // The tilt style object depends on reduceMotion — memoize so it's not
+  // rebuilt on every render while hovered (hovered triggers re-render for
+  // the light/glare opacity transition).
+  const tiltStyle = useMemo(() => (
+    reduceMotion
+      ? undefined
+      : { rotateX, rotateY, transformPerspective: 900, transformStyle: 'preserve-3d' }
+  ), [reduceMotion, rotateX, rotateY]);
+
+  const depthStyle = useMemo(() => (
+    reduceMotion
+      ? undefined
+      : { x: depthX, y: depthY, translateZ: 0, transformStyle: 'preserve-3d' }
+  ), [reduceMotion, depthX, depthY]);
 
   return (
     <GlassPanel
@@ -76,18 +124,9 @@ export default function ProjectCard({ project, index, onOpenDossier }) {
       onMouseEnter={handlePointerEnter}
       onMouseLeave={handlePointerLeave}
       onPointerMove={handlePointerMove}
-      style={
-        reduceMotion
-          ? undefined
-          : {
-              rotateX,
-              rotateY,
-              transformPerspective: 900,
-              transformStyle: 'preserve-3d',
-            }
-      }
+      style={tiltStyle}
       whileHover={reduceMotion ? undefined : { y: LIFT }}
-      transition={reduceMotion ? { duration: 0.15 } : { type: 'spring', stiffness: 280, damping: 24, mass: 0.5 }}
+      transition={reduceMotion ? CARD_TRANSITION_REDUCED : CARD_TRANSITION_SPRING}
       className="group relative overflow-hidden cursor-default"
     >
       {/* Cursor-reactive cyan lighting — behind content, above panel bg */}
@@ -119,11 +158,7 @@ export default function ProjectCard({ project, index, onOpenDossier }) {
 
       {/* Content with subtle parallax depth — translateZ + slight shift */}
       <motion.div
-        style={
-          reduceMotion
-            ? undefined
-            : { x: depthX, y: depthY, translateZ: 0, transformStyle: 'preserve-3d' }
-        }
+        style={depthStyle}
         className="relative p-5 sm:p-6"
       >
         {/* Header row */}
@@ -148,10 +183,7 @@ export default function ProjectCard({ project, index, onOpenDossier }) {
           {project.techStack.map((tech, i) => (
             <motion.div
               key={tech}
-              variants={{
-                rest: { opacity: 0.85, y: 0, scale: 1 },
-                hover: { opacity: 1, y: -2, scale: 1.04, transition: { delay: i * 0.04, type: 'spring', stiffness: 400, damping: 18 } },
-              }}
+              variants={TECH_HOVER_VARIANTS[i] ?? TECH_HOVER_VARIANTS[19]}
               initial="rest"
               animate={hovered ? 'hover' : 'rest'}
             >
@@ -173,7 +205,7 @@ export default function ProjectCard({ project, index, onOpenDossier }) {
           <Button
             variant="primary"
             icon={FiFolder}
-            onClick={() => onOpenDossier(project.id)}
+            onClick={handleOpenDossier}
             className="ml-auto"
           >
             Access File
@@ -182,4 +214,6 @@ export default function ProjectCard({ project, index, onOpenDossier }) {
       </motion.div>
     </GlassPanel>
   );
-}
+});
+
+export default ProjectCard;

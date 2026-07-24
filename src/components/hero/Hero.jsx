@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { FiArrowRight, FiDownload, FiLinkedin, FiGithub, FiMail } from 'react-icons/fi';
 import HUDCore from '@/components/ui/HUDCore';
 import Button from '@/components/ui/Button';
@@ -7,6 +7,8 @@ import MouseGlow from './MouseGlow';
 import StatusPanel from './StatusPanel';
 import ProjectTicker from './ProjectTicker';
 
+// Variant objects defined at module scope — stable references, never
+// recreated on re-render, so Framer Motion can diff them by identity.
 const containerVariants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
@@ -17,6 +19,7 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
 
+// Hoisted — avoids a new string allocation inside the render function.
 const INTRODUCTION = `
 I'm a Computer Engineering student passionate about building AI-powered applications,
 distributed backend systems, and developer tools. I enjoy solving real-world problems
@@ -24,15 +27,19 @@ through full-stack development, machine learning, and scalable system design.
 Currently seeking Software Engineering and AI internship opportunities.
 `;
 
-export default function Hero() {
-  const { scrollY } = useScroll();
-  const ringY = useTransform(scrollY, [0, 600], [0, 80]);
-  const ringOpacity = useTransform(scrollY, [0, 500], [0.5, 0]);
-  const sceneScale = useTransform(scrollY, [0, 600], [1, 0.92]);
+// Hero has no props that change after mount; the static inline style object
+// below (opacity: 0.5) is moved to module scope to avoid a new allocation
+// on every render.
+const hudRingStyle = { opacity: 0.5 };
 
+// The initial animation for the scene wrapper is also stable — hoisted.
+const sceneInitial = { opacity: 0, scale: 0.92 };
+const sceneAnimate = { opacity: 1, scale: 1 };
+const sceneTransition = { duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.15 };
+
+export default function Hero() {
   return (
     <section id="hero" className="relative min-h-screen overflow-hidden">
-      
 
       {/* Grid overlay */}
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-100" />
@@ -47,23 +54,22 @@ export default function Hero() {
         <div className="relative flex min-h-[52vh] items-center justify-center lg:min-h-screen">
           <MouseGlow />
 
-          {/* Background HUD rings — parallax on scroll */}
-          <motion.div
-            style={{opacity:0.5}}
+          {/* Background HUD rings */}
+          <div
+            style={hudRingStyle}
             className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           >
             <HUDCore
               size="lg"
               className="scale-[1.55] opacity-50"
             />
-          </motion.div>
+          </div>
 
-          {/* 3D Robot scene */}
+          {/* 3D Robot scene — entrance animation only, no scroll-driven values */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-            style={{ scale: sceneScale }}
+            initial={sceneInitial}
+            animate={sceneAnimate}
+            transition={sceneTransition}
             className="relative z-10 h-[58vw] max-h-[500px] w-[58vw] max-w-[500px] sm:h-[400px] sm:w-[400px]"
           >
             <HeroScene className="h-full w-full" />
@@ -143,9 +149,6 @@ export default function Hero() {
             </Button>
           </motion.div>
 
-          
-
-          
         </motion.div>
       </div>
 

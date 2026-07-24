@@ -9,6 +9,7 @@ import Skills from '@/components/skills/Skills';
 import Timeline from '@/components/timeline/Timeline';
 import Communication from '@/components/communication/Communication';
 import SceneBackground from '@/components/ui/SceneBackground';
+import Footer from '@/components/ui/Footer';
 
 export default function App() {
   const [booted, setBooted] = useState(false);
@@ -46,14 +47,15 @@ export default function App() {
       {booted && (
         <div className="relative z-10 pt-16">
           <SceneBackground />
-          <div className="relative z-10">
+          <main id="main-content" className="relative z-10">
             <Hero />
             <Terminal />
             <Projects />
             <Skills />
             <Timeline />
             <Communication />
-          </div>
+            <Footer />
+          </main>
         </div>
       )}
     </>

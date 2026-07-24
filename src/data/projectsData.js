@@ -52,8 +52,11 @@ export const projectsData = [
        'Designed scalable event-driven systems using Kafka.',
        'Optimized low-latency real-time communication with Socket.IO.',
     ],
-    
-   
+    performanceMetrics: [
+      { label: 'Order Match Latency', value: '<5ms' },
+      { label: 'Live WebSocket Clients', value: '50+' },
+      { label: 'Events / Second', value: '1,000+' },
+    ],
   },
   {
   id: 'scanix',
@@ -97,7 +100,53 @@ export const projectsData = [
 
   performanceMetrics: [
     { label: 'Detection Accuracy', value: '95%+' },
-    
+  ],
+},
+  {
+  id: 'interviewai',
+  name: 'InterviewAI',
+  status: 'online',
+  type: 'AI · Developer Tool',
+
+  shortDescription:
+    'An AI-powered mock interview platform that conducts real-time technical interviews, evaluates code submissions, and delivers structured feedback using large language models.',
+
+  techStack: [
+    'React',
+    'Node.js',
+    'Python',
+    'FastAPI',
+    'OpenAI API',
+    'MongoDB',
+    'Socket.IO',
+  ],
+
+  github: 'https://github.com/Mani7005',
+  liveDemo: null,
+
+  overview:
+    'InterviewAI simulates a full technical interview experience — presenting coding problems, listening to spoken or typed responses, evaluating logic and code quality, and generating a structured performance report at the end.',
+
+  problemStatement:
+    'Candidates preparing for software engineering interviews lack access to realistic, feedback-rich practice sessions. Generic platforms provide problems but not the evaluation and coaching loop that real interviews provide.',
+
+  architecture:
+    'React frontend communicates via Socket.IO with a Node.js session manager. Code submissions are routed to a FastAPI evaluation service backed by an LLM. Session state and transcripts are stored in MongoDB.',
+
+  engineeringChallenges: [
+    'Streaming LLM responses in real time while keeping the interview session state consistent.',
+    'Designing a rubric-based evaluation prompt that produces structured, repeatable JSON feedback.',
+  ],
+
+  keyLearnings: [
+    'Prompt engineering for structured output requires iterative refinement against a fixed schema.',
+    'WebSocket session management becomes complex when multiple async services share the same connection.',
+    'Separating evaluation logic into a dedicated microservice made the LLM layer independently testable.',
+  ],
+
+  performanceMetrics: [
+    { label: 'Avg Feedback Latency', value: '<3s' },
+    { label: 'Questions per Session', value: '5–10' },
   ],
 },
   {
@@ -189,6 +238,9 @@ export const projectsData = [
     'Proper database design simplifies backend development.'
   ],
 
-  
+  performanceMetrics: [
+    { label: 'PL/SQL Routines', value: '15+' },
+    { label: 'Donor Search Time', value: '<1s' },
+  ],
 },
 ]

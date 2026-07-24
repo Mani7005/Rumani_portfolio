@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdMenu, MdClose } from 'react-icons/md';
 import { navigationData } from './navigationData';
@@ -7,43 +7,57 @@ import NavItem from './NavItem';
 /**
  * NavigationRail
  * ---------------
- * Desktop: fixed horizontal top bar (was a left-side vertical rail).
- * Mobile: unchanged — same floating hamburger button + popover menu as
- * before; it doesn't use NavItem and didn't need to change at all.
+ * Desktop: fixed horizontal top bar.
+ * Mobile: floating hamburger button + popover menu.
  *
- * Reused as-is from the previous version: navigationData, the
- * active-section scroll-detection logic, handleNavClick's smooth-scroll
- * behavior, the resize-driven isMobile switch, and the boot-gate
- * (`if (!booted) return null`). Only the desktop branch's markup and the
- * scroll handler (extended to also track `scrolled`, see below) changed.
+ * Performance notes:
+ *  - `sectionIds` is derived from navigationData (stable module-scope
+ *    constant) and memoized at module scope — the scroll handler was
+ *    previously calling `navigationData.map(...)` on EVERY scroll event,
+ *    allocating a new string array each time.
+ *  - The mobile menu item inline onClick handlers are now produced via
+ *    a stable `handleNavClick` that is passed once rather than a new
+ *    arrow function per item per render.
+ *  - `scrolled` and `activeSection` are still separate state items to
+ *    keep re-renders granular; combining them into one object would cause
+ *    more re-renders, not fewer.
  */
+
+// Pre-compute section id list at module scope — navigationData is a
+// module-scope constant so this derivation never needs to repeat.
+const sectionIds = navigationData.map((item) => item.href.slice(1));
+
+// Hoisted mobile menu item transition
+const MOBILE_ITEM_TRANSITION = { duration: 0.4, ease: [0.22, 1, 0.36, 1] };
+const MOBILE_MENU_TRANSITION = { duration: 0.3, ease: [0.22, 1, 0.36, 1] };
+
 export default function NavigationRail({ booted }) {
   const [activeSection, setActiveSection] = useState('home');
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [scrolled, setScrolled] = useState(false);
 
-  // Track active section on scroll — same logic as before, now also sets
-  // `scrolled` (single listener doing both jobs rather than two).
+  // Track active section on scroll — sectionIds is stable (module scope),
+  // so the handler only closes over setState functions (also stable).
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 24);
 
-      const sections = navigationData.map((item) => item.href.slice(1));
-
-      for (const section of sections) {
+      for (const section of sectionIds) {
         const element = document.getElementById(section);
         if (element) {
           const rect = element.getBoundingClientRect();
           if (rect.top <= 100 && rect.bottom >= 100) {
-            setActiveSection(navigationData.find((item) => item.href.slice(1) === section)?.id || 'home');
+            setActiveSection(
+              navigationData.find((item) => item.href.slice(1) === section)?.id || 'home'
+            );
             break;
           }
         }
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -55,7 +69,7 @@ export default function NavigationRail({ booted }) {
       if (mobile) setIsOpen(false);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -69,6 +83,16 @@ export default function NavigationRail({ booted }) {
     }
   }, []);
 
+  // Pre-build stable per-item click handlers so the mobile menu doesn't
+  // create new arrow functions per item per render.
+  const itemClickHandlers = useMemo(
+    () => navigationData.map((item) => () => handleNavClick(item)),
+    [handleNavClick]
+  );
+
+  const closeMenu = useCallback(() => setIsOpen(false), []);
+  const toggleMenu = useCallback(() => setIsOpen((o) => !o), []);
+
   if (!booted) return null;
 
   // Desktop: fixed horizontal top bar
@@ -78,6 +102,7 @@ export default function NavigationRail({ booted }) {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        aria-label="Main navigation"
         className="fixed inset-x-0 top-0 z-50 hidden md:block"
       >
         <div
@@ -116,7 +141,7 @@ export default function NavigationRail({ booted }) {
     );
   }
 
-  // Mobile Floating Menu — unchanged from the previous version
+  // Mobile Floating Menu
   return (
     <>
       {/* Floating Menu Button */}
@@ -124,7 +149,10 @@ export default function NavigationRail({ booted }) {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggleMenu}
+        aria-expanded={isOpen}
+        aria-controls="mobile-nav-menu"
+        aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
         className="fixed bottom-6 right-6 z-40 md:hidden p-3 rounded-lg border border-cyan-core/30 bg-gradient-to-br from-panel/60 to-panel/40 backdrop-blur-md hover:border-cyan-core/50 transition-all duration-300 shadow-lg hover:shadow-glow-cyan-sm"
       >
         <AnimatePresence mode="wait">
@@ -161,16 +189,20 @@ export default function NavigationRail({ booted }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
+              onClick={closeMenu}
               className="fixed inset-0 z-30 bg-void/40 backdrop-blur-sm md:hidden"
             />
 
             {/* Menu Content */}
             <motion.div
+              id="mobile-nav-menu"
+              role="dialog"
+              aria-label="Navigation menu"
+              aria-modal="true"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={MOBILE_MENU_TRANSITION}
               className="fixed bottom-24 right-6 z-40 md:hidden rounded-lg border border-cyan-core/30 bg-gradient-to-b from-panel/80 to-panel/60 backdrop-blur-md shadow-lg p-4"
             >
               <div className="flex flex-col gap-2">
@@ -179,8 +211,8 @@ export default function NavigationRail({ booted }) {
                     key={item.id}
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    onClick={() => handleNavClick(item)}
+                    transition={{ delay: index * 0.05, ...MOBILE_ITEM_TRANSITION }}
+                    onClick={itemClickHandlers[index]}
                     className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors duration-300 text-left ${
                       activeSection === item.id
                         ? 'bg-cyan-core/20 text-cyan-core border border-cyan-core/40'

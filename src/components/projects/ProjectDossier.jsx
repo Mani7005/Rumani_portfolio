@@ -1,25 +1,45 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback, memo } from 'react';
 import { motion } from 'framer-motion';
 import { FiX, FiGithub, FiExternalLink, FiImage } from 'react-icons/fi';
 import Button from '@/components/ui/Button';
 import ProjectStatus from './ProjectStatus';
 import TechBadge from './TechBadge';
 
+// Hoisted motion prop objects — panel slide transition is the same for
+// every dossier invocation.
+const BACKDROP_TRANSITION = { duration: 0.3 };
+const PANEL_TRANSITION    = { duration: 0.45, ease: [0.22, 1, 0.36, 1] };
+const PANEL_INITIAL       = { x: '100%' };
+const PANEL_ANIMATE       = { x: 0 };
+const PANEL_EXIT          = { x: '100%' };
+const BACKDROP_INITIAL    = { opacity: 0 };
+const BACKDROP_ANIMATE    = { opacity: 1 };
+const BACKDROP_EXIT       = { opacity: 0 };
+
 /**
  * Section — the dossier's own label + content block. Same "mono label,
  * cyan hairline" grammar used elsewhere in the app, kept local to this
  * file since nothing else needs it.
+ *
+ * Wrapped in memo: ProjectDossier re-renders are rare (only when the
+ * dossier opens), but the sections are static once rendered and memo
+ * makes future extensions (e.g. interactive sections) safer.
  */
-function Section({ label, children }) {
+const Section = memo(function Section({ label, children }) {
   return (
     <div className="border-l border-cyan-core/20 pl-4">
       <p className="font-mono text-[9px] tracking-[0.06em] text-ink-muted/70 uppercase">// {label}</p>
       <div className="mt-2">{children}</div>
     </div>
   );
-}
+});
 
-function BulletList({ items }) {
+/**
+ * BulletList — renders a stable list of string items.
+ * Wrapped in memo: items array comes from project data (module-scope constant)
+ * and never changes identity during the dossier's lifetime.
+ */
+const BulletList = memo(function BulletList({ items }) {
   return (
     <ul className="space-y-1.5">
       {items.map((item) => (
@@ -30,14 +50,14 @@ function BulletList({ items }) {
       ))}
     </ul>
   );
-}
+});
 
 /**
  * ScreenshotTile — renders a real image if `src` is provided, otherwise a
  * labeled HUD placeholder. Keeps the section functional and honest before
  * real screenshots exist, without needing to change this component later.
  */
-function ScreenshotTile({ caption, src }) {
+const ScreenshotTile = memo(function ScreenshotTile({ caption, src }) {
   if (src) {
     return (
       <div className="overflow-hidden rounded-sm border border-glass-border">
@@ -52,10 +72,16 @@ function ScreenshotTile({ caption, src }) {
       <p className="text-[11px] text-ink-muted/80">{caption}</p>
     </div>
   );
-}
+});
 
 export default function ProjectDossier({ project, onClose }) {
   const closeButtonRef = useRef(null);
+
+  // Stable click handler — onClose comes from Projects.jsx as a stable
+  // setActiveId(null) reference (no useCallback needed there since setState
+  // setters are always stable, but the arrow fn in JSX was creating a new
+  // ref each render; handled at the call site in Projects.jsx).
+  const handleStopPropagation = useCallback((e) => e.stopPropagation(), []);
 
   // ESC closes; lock background scroll while the dossier is open
   useEffect(() => {
@@ -78,10 +104,10 @@ export default function ProjectDossier({ project, onClose }) {
     <div className="fixed inset-0 z-[70]">
       {/* Backdrop — click closes, blurs the rest of the OS */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
+        initial={BACKDROP_INITIAL}
+        animate={BACKDROP_ANIMATE}
+        exit={BACKDROP_EXIT}
+        transition={BACKDROP_TRANSITION}
         onClick={onClose}
         className="absolute inset-0 bg-void/70 backdrop-blur-md"
       />
@@ -91,17 +117,16 @@ export default function ProjectDossier({ project, onClose }) {
         role="dialog"
         aria-modal="true"
         aria-label={`${project.name} engineering dossier`}
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        onClick={(e) => e.stopPropagation()}
+        initial={PANEL_INITIAL}
+        animate={PANEL_ANIMATE}
+        exit={PANEL_EXIT}
+        transition={PANEL_TRANSITION}
+        onClick={handleStopPropagation}
         className="absolute right-0 top-0 flex h-full w-full flex-col border-l border-glass-border bg-panel/95 shadow-2xl backdrop-blur-xl sm:max-w-xl lg:max-w-2xl"
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-glass-border px-6 py-5 sm:px-8">
           <div>
-            
             <h3 className="mt-1 font-display text-2xl text-ink-primary sm:text-3xl">{project.name}</h3>
             <div className="mt-2 flex flex-wrap items-center gap-3">
               <ProjectStatus status={project.status} />
@@ -148,8 +173,6 @@ export default function ProjectDossier({ project, onClose }) {
           <Section label="KEY LEARNINGS">
             <BulletList items={project.keyLearnings} />
           </Section>
-
-          
 
           {hasMetrics && (
             <Section label="PERFORMANCE METRICS">

@@ -1,7 +1,25 @@
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-export default function BootLog({ lines, elapsed, className }) {
+// Hoisted — BootLog renders inside BootScreen which re-renders at ~60fps.
+// Without hoisting, each motion.div receives new object literals every frame,
+// causing Framer Motion to re-diff the animation state on every tick.
+const LINE_INITIAL   = { opacity: 0, x: -4 };
+const LINE_ANIMATE   = { opacity: 1, x: 0 };
+const LINE_TRANSITION = { duration: 0.2 };
+
+/**
+ * BootLog
+ * -------
+ * Wrapped in React.memo: BootScreen re-renders at ~60fps via rAF. BootLog
+ * receives `lines` (stable — built once by buildBootTimeline) and `elapsed`
+ * (changes every frame). Memo can't prevent re-renders here since elapsed
+ * changes every frame, but the hoisted Framer Motion objects prevent the
+ * internal motion.div instances from receiving new prop references on every
+ * re-render, allowing Framer Motion's internal reconciler to short-circuit.
+ */
+const BootLog = memo(function BootLog({ lines, elapsed, className }) {
   return (
     <div className={cn('w-full max-w-xs space-y-1 font-mono text-[11px]', className)}>
       {lines.map((line) => {
@@ -16,9 +34,9 @@ export default function BootLog({ lines, elapsed, className }) {
         return (
           <motion.div
             key={line.text}
-            initial={{ opacity: 0, x: -4 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={LINE_INITIAL}
+            animate={LINE_ANIMATE}
+            transition={LINE_TRANSITION}
             className="flex items-center gap-2.5"
           >
             <span className="text-cyan-core/40 select-none">›</span>
@@ -42,4 +60,6 @@ export default function BootLog({ lines, elapsed, className }) {
       })}
     </div>
   );
-}
+});
+
+export default BootLog;

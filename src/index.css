@@ -80,6 +80,43 @@
     @apply h-px w-full;
     background: linear-gradient(90deg, transparent, rgba(45,212,232,0.08) 30%, rgba(45,212,232,0.08) 70%, transparent);
   }
+
+  /* Screen-reader only — visually hidden but announced by AT */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Skip-to-content link — visible only on focus for keyboard users */
+  .skip-to-content {
+    position: absolute;
+    top: -100%;
+    left: 1rem;
+    z-index: 9999;
+    padding: 0.5rem 1rem;
+    background: #2DD4E8;
+    color: #03060A;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 0 0 4px 4px;
+    transition: top 0.15s ease;
+  }
+  .skip-to-content:focus {
+    top: 0;
+    outline: 2px solid rgba(45, 212, 232, 0.8);
+    outline-offset: 2px;
+  }
 }
 
 @layer utilities {

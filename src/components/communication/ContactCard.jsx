@@ -1,9 +1,14 @@
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { motion } from 'framer-motion';
 import { FiCopy, FiCheck, FiExternalLink, FiDownload } from 'react-icons/fi';
 import GlassPanel from '@/components/ui/GlassPanel';
 import Button from '@/components/ui/Button';
 import StatusIndicator from './StatusIndicator';
+
+// Hoisted motion prop objects — ContactCard renders 6 times in Communication.
+// Without hoisting, each instance allocates these on every render.
+const HOVER_Y = { y: -4 };
+const HOVER_TRANSITION = { duration: 0.3, ease: [0.22, 1, 0.36, 1] };
 
 /**
  * ContactCard
@@ -19,12 +24,19 @@ import StatusIndicator from './StatusIndicator';
  *
  * Every card shares the same GlassPanel hover-lift/glow + scan-line
  * treatment already established in ProjectCard/SkillModule/TimelineNode.
+ *
+ * Wrapped in React.memo: Communication.jsx has no state that changes
+ * after mount, but memo prevents re-renders if a sibling card's copied
+ * state were ever to propagate (it can't, but memo is cheap here).
  */
-export default function ContactCard({ icon: Icon, label, value, action, statusValue }) {
+const ContactCard = memo(function ContactCard({ icon: Icon, label, value, action, statusValue }) {
   const [hovered, setHovered] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleCopy = async () => {
+  const handleMouseEnter = useCallback(() => setHovered(true), []);
+  const handleMouseLeave = useCallback(() => setHovered(false), []);
+
+  const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(value);
       setCopied(true);
@@ -33,14 +45,14 @@ export default function ContactCard({ icon: Icon, label, value, action, statusVa
       // Clipboard access can fail (permissions, insecure context) — the
       // card just stays in its normal state rather than throwing.
     }
-  };
+  }, [value]);
 
-  const handleDownload = () => {
+  const handleDownload = useCallback(() => {
     const link = document.createElement('a');
     link.href = action.href;
     link.download = action.filename ?? '';
     link.click();
-  };
+  }, [action]);
 
   const renderAction = () => {
     if (!action) return null;
@@ -73,10 +85,10 @@ export default function ContactCard({ icon: Icon, label, value, action, statusVa
     <GlassPanel
       as={motion.div}
       active={hovered}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      whileHover={HOVER_Y}
+      transition={HOVER_TRANSITION}
       className="group relative flex h-full flex-col overflow-hidden p-5 sm:p-6"
     >
       {/* scan line — on hover, matching the rest of the system */}
@@ -102,4 +114,6 @@ export default function ContactCard({ icon: Icon, label, value, action, statusVa
       <div className="relative">{renderAction()}</div>
     </GlassPanel>
   );
-}
+});
+
+export default ContactCard;

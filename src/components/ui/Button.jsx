@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -10,7 +11,23 @@ const VARIANTS = {
     'bg-transparent text-ink-secondary border border-transparent hover:text-cyan-core hover:border-cyan-core/15',
 };
 
-export default function Button({
+const WHILE_HOVER = { y: -2 };
+const WHILE_TAP   = { y: 0, scale: 0.98 };
+const TRANSITION  = { duration: 0.2, ease: [0.22, 1, 0.36, 1] };
+
+/**
+ * Button
+ * ------
+ * Accessibility notes:
+ *  - Non-link buttons always carry type="button" to prevent accidental
+ *    form submission when rendered inside a <form> element.
+ *  - External links use rel="noopener noreferrer" (both required: noopener
+ *    prevents the opened page from accessing window.opener; noreferrer
+ *    additionally suppresses the Referer header).
+ *  - External links include a visually-hidden "(opens in new tab)" suffix
+ *    so screen reader users are warned before navigation.
+ */
+const Button = memo(function Button({
   children,
   href,
   variant = 'outline',
@@ -19,14 +36,14 @@ export default function Button({
   className,
   ...props
 }) {
+  const isExternal = href?.startsWith('http') || href?.startsWith('mailto:');
   const Component = href ? motion.a : motion.button;
-  const linkProps = href
-    ? {
-        href,
-        target: href.startsWith('http') ? '_blank' : undefined,
-        rel: href.startsWith('http') ? 'noreferrer' : undefined,
-      }
-    : {};
+
+  const linkProps = useMemo(() => {
+    if (!href) return { type: 'button' };
+    if (isExternal) return { href, target: '_blank', rel: 'noopener noreferrer' };
+    return { href };
+  }, [href, isExternal]);
 
   return (
     <Component
@@ -36,15 +53,19 @@ export default function Button({
         VARIANTS[variant],
         className
       )}
-      whileHover={{ y: -2 }}
-      whileTap={{ y: 0, scale: 0.98 }}
-      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={WHILE_HOVER}
+      whileTap={WHILE_TAP}
+      transition={TRANSITION}
       {...linkProps}
       {...props}
     >
-      {Icon && iconPosition === 'left' && <Icon className="h-3 w-3" />}
+      {Icon && iconPosition === 'left' && <Icon className="h-3 w-3" aria-hidden="true" />}
       {children}
-      {Icon && iconPosition === 'right' && <Icon className="h-3 w-3" />}
+      {Icon && iconPosition === 'right' && <Icon className="h-3 w-3" aria-hidden="true" />}
+      {/* Screen-reader announcement for links that open in a new tab */}
+      {isExternal && <span className="sr-only">(opens in new tab)</span>}
     </Component>
   );
-}
+});
+
+export default Button;

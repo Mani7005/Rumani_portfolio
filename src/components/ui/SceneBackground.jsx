@@ -10,9 +10,14 @@ import { useEffect, useRef } from 'react';
  *  - a canvas of drifting particles
  *  - a cursor-reactive radial glow that follows the pointer
  *
- * Purely decorative (aria-hidden), pointer-events disabled, and pauses
- * its canvas animation when the tab is hidden or the user prefers
- * reduced motion.
+ * Purely decorative (aria-hidden), pointer-events disabled.
+ *
+ * Performance notes:
+ *  - Both rAF loops (particles + cursor glow) pause when the tab is hidden
+ *    via visibilitychange, preventing GPU/CPU work when no one can see it.
+ *  - Both loops skip entirely when prefers-reduced-motion is active.
+ *  - Cleanup functions cancel all rAFs and remove all event listeners to
+ *    prevent memory leaks on unmount.
  */
 
 const PARTICLE_COUNT = 46;
@@ -20,8 +25,8 @@ const PARTICLE_COUNT = 46;
 export default function SceneBackground() {
   const canvasRef = useRef(null);
   const glowRef = useRef(null);
-  const rafRef = useRef(null);
 
+  // Particle canvas loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -34,6 +39,8 @@ export default function SceneBackground() {
     let particles = [];
     let w = 0;
     let h = 0;
+    let rafId = null;
+    let running = !document.hidden;
 
     const resize = () => {
       w = canvas.width = window.innerWidth;
@@ -49,14 +56,7 @@ export default function SceneBackground() {
       }));
     };
     resize();
-    window.addEventListener('resize', resize);
-
-    let running = true;
-    const onVisibility = () => {
-      running = !document.hidden;
-      if (running) loop();
-    };
-    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('resize', resize, { passive: true });
 
     const loop = () => {
       if (!running) return;
@@ -78,19 +78,26 @@ export default function SceneBackground() {
         ctx.fill();
       }
       ctx.shadowBlur = 0;
-      rafRef.current = requestAnimationFrame(loop);
+      rafId = requestAnimationFrame(loop);
     };
     loop();
 
+    const onVisibility = () => {
+      running = !document.hidden;
+      if (running) loop();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
     return () => {
       running = false;
-      cancelAnimationFrame(rafRef.current);
+      cancelAnimationFrame(rafId);
       window.removeEventListener('resize', resize);
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, []);
 
   // Cursor-reactive glow — eased via rAF, no React re-renders.
+  // Also pauses on tab hide to avoid pointless GPU compositing.
   useEffect(() => {
     const glow = glowRef.current;
     if (!glow) return;
@@ -101,24 +108,36 @@ export default function SceneBackground() {
     let ty = window.innerHeight / 2;
     let cx = tx;
     let cy = ty;
-    let raf = null;
+    let rafId = null;
+    let running = !document.hidden;
 
     const onMove = (e) => {
       tx = e.clientX;
       ty = e.clientY;
     };
+
     const loop = () => {
+      if (!running) return;
       cx += (tx - cx) * 0.08;
       cy += (ty - cy) * 0.08;
       glow.style.background = `radial-gradient(420px circle at ${cx}px ${cy}px, rgba(45,212,232,0.06), transparent 60%)`;
-      raf = requestAnimationFrame(loop);
+      rafId = requestAnimationFrame(loop);
     };
     loop();
+
+    const onVisibility = () => {
+      running = !document.hidden;
+      if (running) loop();
+    };
+
     window.addEventListener('pointermove', onMove, { passive: true });
+    document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
-      cancelAnimationFrame(raf);
+      running = false;
+      cancelAnimationFrame(rafId);
       window.removeEventListener('pointermove', onMove);
+      document.removeEventListener('visibilitychange', onVisibility);
     };
   }, []);
 

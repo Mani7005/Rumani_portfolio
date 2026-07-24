@@ -73,13 +73,13 @@ export default function Terminal() {
     },
     downloadResume: () => {
       const link = document.createElement('a');
-      link.href = '/resume.pdf';
+      link.href = '/Dadyala_rumani...pdf';
       link.download = 'Rumani_Dadyala_Resume.pdf';
       link.click();
       append('output', ['Downloading resume...']);
     },
     openGithub: () => {
-      window.open('https://github.com/', '_blank', 'noopener,noreferrer');
+      window.open('https://github.com/Mani7005', '_blank', 'noopener,noreferrer');
       append('output', ['Opening GitHub in a new tab...']);
     },
   };
@@ -200,7 +200,7 @@ export default function Terminal() {
       </div>
 
       {/* Section separator */}
-      <div className="section-separator mt-24" />
+      <div className="section-separator mt-16" />
     </section>
   );
 }
