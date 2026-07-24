@@ -17,8 +17,9 @@ export default function NavItem({ item, isActive, onClick }) {
     <motion.button
       onClick={onClick}
       className="group relative flex items-center gap-2 rounded-md px-3.5 py-2 transition-colors duration-300"
-      whileHover={{ y: -1 }}
+      whileHover={{ y: -2 }}
       whileTap={{ y: 0, scale: 0.97 }}
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* active glow, shared across items via layoutId for a smooth slide */}
       {isActive && (

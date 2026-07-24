@@ -43,7 +43,7 @@ export default function Projects() {
             </p>
           </div>
           <span className="hidden font-mono text-[8px] tracking-[0.3em] text-ink-muted/40 uppercase sm:block">
-            03 / 03
+            03 / 06
           </span>
         </div>
 

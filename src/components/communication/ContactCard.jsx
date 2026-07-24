@@ -75,8 +75,8 @@ export default function ContactCard({ icon: Icon, label, value, action, statusVa
       active={hovered}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      whileHover={{ y: -2 }}
-      transition={{ duration: 0.15 }}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
       className="group relative flex h-full flex-col overflow-hidden p-5 sm:p-6"
     >
       {/* scan line — on hover, matching the rest of the system */}
