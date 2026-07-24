@@ -77,7 +77,7 @@ export default function NavigationRail({ booted }) {
       <motion.nav
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
+        transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="fixed inset-x-0 top-0 z-50 hidden md:block"
       >
         <div
@@ -123,7 +123,7 @@ export default function NavigationRail({ booted }) {
       <motion.button
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
+        transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-6 right-6 z-40 md:hidden p-3 rounded-lg border border-cyan-core/30 bg-gradient-to-br from-panel/60 to-panel/40 backdrop-blur-md hover:border-cyan-core/50 transition-all duration-300 shadow-lg hover:shadow-glow-cyan-sm"
       >
@@ -134,7 +134,7 @@ export default function NavigationRail({ booted }) {
               initial={{ rotate: -90, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
             >
               <MdClose className="h-6 w-6 text-cyan-core" />
             </motion.div>
@@ -144,7 +144,7 @@ export default function NavigationRail({ booted }) {
               initial={{ rotate: 90, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: -90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
             >
               <MdMenu className="h-6 w-6 text-cyan-core/70 group-hover:text-cyan-core" />
             </motion.div>
@@ -170,7 +170,7 @@ export default function NavigationRail({ booted }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="fixed bottom-24 right-6 z-40 md:hidden rounded-lg border border-cyan-core/30 bg-gradient-to-b from-panel/80 to-panel/60 backdrop-blur-md shadow-lg p-4"
             >
               <div className="flex flex-col gap-2">
@@ -179,7 +179,7 @@ export default function NavigationRail({ booted }) {
                     key={item.id}
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
+                    transition={{ delay: index * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                     onClick={() => handleNavClick(item)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors duration-300 text-left ${
                       activeSection === item.id

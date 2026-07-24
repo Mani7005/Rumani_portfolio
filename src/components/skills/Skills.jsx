@@ -12,6 +12,8 @@ const moduleVariants = {
   show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
 
+/* Counters standardized to /06 across all sections. */
+
 /**
  * Skills ("Tech Arsenal")
  * -----------------------
@@ -20,12 +22,6 @@ const moduleVariants = {
  * whileInView stagger-reveal approach. Grid (not the Project Database's
  * stacked list) since these are compact status modules, not deep records.
  *
- * NOTE: the header counter below reads "04 / 04" from this section's own
- * point of view. Terminal.jsx and Projects.jsx still show "02 / 03" and
- * "03 / 03" respectively — updating those to "0X / 04" would mean editing
- * protected existing files, which this task explicitly rules out, so the
- * counters are left slightly stale on the older sections. Worth a
- * one-line fix in each of those files whenever they're back in scope.
  */
 export default function Skills() {
   return (
@@ -44,7 +40,7 @@ export default function Skills() {
             </p>
           </div>
           <span className="hidden font-mono text-[8px] tracking-[0.3em] text-ink-muted/40 uppercase sm:block">
-            04 / 04
+            04 / 06
           </span>
         </div>
 

@@ -87,7 +87,7 @@ export default function ProjectCard({ project, index, onOpenDossier }) {
             }
       }
       whileHover={reduceMotion ? undefined : { y: LIFT }}
-      transition={reduceMotion ? { duration: 0.15 } : { type: 'spring', stiffness: 260, damping: 22, mass: 0.6 }}
+      transition={reduceMotion ? { duration: 0.15 } : { type: 'spring', stiffness: 280, damping: 24, mass: 0.5 }}
       className="group relative overflow-hidden cursor-default"
     >
       {/* Cursor-reactive cyan lighting — behind content, above panel bg */}
@@ -95,9 +95,9 @@ export default function ProjectCard({ project, index, onOpenDossier }) {
         <motion.div
           aria-hidden
           className="pointer-events-none absolute inset-0"
-          style={{ background: lightBg, opacity: hovered ? 1 : 0 }}
+          style={{ background: lightBg }}
           animate={{ opacity: hovered ? 1 : 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         />
       )}
 
@@ -106,9 +106,9 @@ export default function ProjectCard({ project, index, onOpenDossier }) {
         <motion.div
           aria-hidden
           className="pointer-events-none absolute inset-0 mix-blend-overlay"
-          style={{ background: glareBg, opacity: hovered ? 1 : 0 }}
+          style={{ background: glareBg }}
           animate={{ opacity: hovered ? 1 : 0 }}
-          transition={{ duration: 0.35 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         />
       )}
 
