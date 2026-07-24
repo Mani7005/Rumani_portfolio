@@ -31,7 +31,7 @@ export default function Button({
   return (
     <Component
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-sm px-5 py-2.5',
+        'sheen-host inline-flex items-center justify-center gap-2 rounded-sm px-5 py-2.5',
         'font-mono text-[10px] tracking-[0.2em] uppercase transition-all duration-200',
         VARIANTS[variant],
         className

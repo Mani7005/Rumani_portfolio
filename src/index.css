@@ -104,6 +104,40 @@
     background-size: 24px 24px;
   }
 
+  /* Animated panning cyber grid — subtle drift */
+  .bg-grid-pan {
+    background-image:
+      linear-gradient(rgba(45, 212, 232, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(45, 212, 232, 0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    animation: grid-pan 24s linear infinite;
+  }
+
+  /* Perspective floor grid — recedes into distance */
+  .bg-grid-floor {
+    background-image:
+      linear-gradient(rgba(45, 212, 232, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(45, 212, 232, 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    transform: perspective(420px) rotateX(62deg);
+    transform-origin: center bottom;
+    mask-image: linear-gradient(to top, black 0%, transparent 75%);
+    -webkit-mask-image: linear-gradient(to top, black 0%, transparent 75%);
+  }
+
+  /* Sheen sweep — used by buttons on hover */
+  .sheen-host { position: relative; overflow: hidden; }
+  .sheen-host::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    transform: translateX(-120%) skewX(-12deg);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    pointer-events: none;
+  }
+  .sheen-host:hover::after { animation: sheen 0.9s ease-out; }
+
   /* Reticle corner bracket */
   .clip-corner {
     clip-path: polygon(0 12px, 12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);

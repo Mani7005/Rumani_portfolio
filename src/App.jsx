@@ -8,6 +8,7 @@ import Projects from '@/components/projects/Projects';
 import Skills from '@/components/skills/Skills';
 import Timeline from '@/components/timeline/Timeline';
 import Communication from '@/components/communication/Communication';
+import SceneBackground from '@/components/ui/SceneBackground';
 
 export default function App() {
   const [booted, setBooted] = useState(false);
@@ -43,13 +44,16 @@ export default function App() {
       <NavigationRail booted={booted} />
 
       {booted && (
-        <div className="pt-16">
-          <Hero />
-          <Terminal />
-          <Projects />
-          <Skills />
-          <Timeline />
-          <Communication />
+        <div className="relative z-10 pt-16">
+          <SceneBackground />
+          <div className="relative z-10">
+            <Hero />
+            <Terminal />
+            <Projects />
+            <Skills />
+            <Timeline />
+            <Communication />
+          </div>
         </div>
       )}
     </>

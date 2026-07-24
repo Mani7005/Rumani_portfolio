@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { FiArrowRight, FiDownload, FiLinkedin, FiGithub, FiMail } from 'react-icons/fi';
 import HUDCore from '@/components/ui/HUDCore';
 import Button from '@/components/ui/Button';
@@ -25,6 +25,11 @@ Currently seeking Software Engineering and AI internship opportunities.
 `;
 
 export default function Hero() {
+  const { scrollY } = useScroll();
+  const ringY = useTransform(scrollY, [0, 600], [0, 80]);
+  const ringOpacity = useTransform(scrollY, [0, 500], [0.5, 0]);
+  const sceneScale = useTransform(scrollY, [0, 600], [1, 0.92]);
+
   return (
     <section id="hero" className="relative min-h-screen overflow-hidden">
       
@@ -42,17 +47,23 @@ export default function Hero() {
         <div className="relative flex min-h-[52vh] items-center justify-center lg:min-h-screen">
           <MouseGlow />
 
-          {/* Background HUD rings */}
-          <HUDCore
-            size="lg"
-            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 scale-[1.55] opacity-50"
-          />
+          {/* Background HUD rings — parallax on scroll */}
+          <motion.div
+            style={{ y: ringY, opacity: ringOpacity }}
+            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          >
+            <HUDCore
+              size="lg"
+              className="scale-[1.55] opacity-50"
+            />
+          </motion.div>
 
           {/* 3D Robot scene */}
           <motion.div
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.1, ease: 'easeOut', delay: 0.15 }}
+            style={{ scale: sceneScale }}
             className="relative z-10 h-[58vw] max-h-[500px] w-[58vw] max-w-[500px] sm:h-[400px] sm:w-[400px]"
           >
             <HeroScene className="h-full w-full" />
@@ -103,11 +114,11 @@ export default function Hero() {
             </motion.p>
           </div>
 
-          <div className="max-w-xl mt-3">
+          <motion.div variants={itemVariants} className="max-w-xl mt-3">
                  <p className="text-[1.15rem] md:text-[1.2rem] leading-[2rem] text-slate-200">
                   {INTRODUCTION}
                  </p>
-          </div>
+          </motion.div>
 
           {/* CTA buttons */}
           <motion.div variants={itemVariants} className="flex flex-wrap gap-2.5">
