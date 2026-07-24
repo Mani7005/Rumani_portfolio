@@ -23,103 +23,172 @@ export const projectsData = [
     id: 'tradestreamx',
     name: 'TradeStreamX',
     status: 'online',
-    type: 'Distributed Systems · Real-Time Data',
+    type: 'LOW-LATENCY TRADING EXCHANGE · DISTRIBUTED SYSTEMS',
     shortDescription:
-      'A real-time market data pipeline that ingests, normalizes, and streams trading data to thousands of concurrent subscribers with sub-100ms latency.',
-    techStack: ['Go', 'Kafka', 'Redis', 'WebSockets', 'PostgreSQL', 'Docker'],
-    github: 'https://github.com/',
-    liveDemo: 'https://example.com/',
+      'Distributed stock exchange simulator with price-time priority order matching, Kafka event streaming, Redis caching, PostgreSQL persistence, REST APIs, and real-time WebSocket market feeds.',
+    techStack: [
+     'React',
+     'Node.js',
+     'Kafka',
+     'Redis',
+     'Socket.IO',
+     'PostgreSQL',
+     'Docker'
+    ],
+    github: 'https://github.com/Mani7005/tradestream',
+    liveDemo: 'https://tradestream-chi.vercel.app/',
 
     overview:
-      'TradeStreamX is a real-time market data platform built to move trading data from exchange feeds to thousands of subscribers with minimal delay, replacing an earlier polling-based prototype that could not keep pace with volume.',
+      'A distributed stock exchange simulator featuring real-time order matching, live market updates, and a modern trading dashboard.',
     problemStatement:
-      'Traders and downstream services needed live price and order-book updates, but the original polling approach introduced multi-second lag and fell over under bursty load — unacceptable for anything time-sensitive.',
+      'Designed to demonstrate how modern exchanges process concurrent orders with low latency and real-time data synchronization.',
     architecture:
-      'Market data enters through a Go ingestion layer, gets normalized against a unified schema, and is fanned out through Kafka topics partitioned by instrument. A WebSocket gateway layer subscribes to relevant partitions per client and pushes deltas rather than full snapshots to keep bandwidth low.',
+      'React frontend → Node.js API → Kafka event pipeline → Matching Engine → PostgreSQL + Redis → Socket.IO live updates.',
     engineeringChallenges: [
-      'Out-of-order message arrival across multiple upstream feeds, resolved with a watermark-based reordering buffer',
-      'Thundering-herd reconnects during upstream outages, mitigated with jittered backoff and staged resubscription',
+      'Built deterministic price-time priority order matching.',
+      'Kept Redis, PostgreSQL, and live WebSocket clients synchronized.',
     ],
     keyLearnings: [
-      'Reordering buffers need an explicit watermark strategy — "wait a bit longer" is not a real algorithm.',
-      'A binary wire protocol paid for itself almost immediately once client counts grew past a few thousand.',
-      'Backpressure has to be designed in from day one; retrofitting it after clients start lagging is much harder.',
+       'Designed scalable event-driven systems using Kafka.',
+       'Optimized low-latency real-time communication with Socket.IO.',
     ],
-    screenshots: [
-      { id: 'dashboard', caption: 'Live trading dashboard — streaming order book and price chart', src: null },
-      { id: 'architecture-diagram', caption: 'Ingestion → Kafka → WebSocket gateway data flow', src: null },
-    ],
-    performanceMetrics: [
-      { label: 'P99 Latency', value: '87ms' },
-      { label: 'Concurrent Streams', value: '12k+' },
-      { label: 'Uptime', value: '99.95%' },
-    ],
+    
+   
   },
   {
-    id: 'interviewai',
-    name: 'InterviewAI',
-    status: 'online',
-    type: 'AI · Full-Stack Application',
-    shortDescription:
-      'An AI-driven mock interview platform that conducts adaptive technical interviews and gives structured, actionable feedback in real time.',
-    techStack: ['React', 'Node.js', 'Python', 'OpenAI API', 'PostgreSQL', 'WebRTC'],
-    github: 'https://github.com/',
-    liveDemo: 'https://example.com/',
+  id: 'scanix',
+  name: 'Scanix',
+  status: 'online',
+  type: 'AI · Cybersecurity Platform',
+  shortDescription:
+    'An AI-powered scam detection platform that analyzes suspicious messages and URLs to identify phishing attempts and online fraud.',
 
-    overview:
-      'InterviewAI runs adaptive, AI-evaluated mock technical interviews end-to-end — from question selection, through spoken or written responses, to a structured feedback report.',
-    problemStatement:
-      'Practicing technical interviews alone gives no real feedback, and human mock interviewers are expensive and hard to schedule. InterviewAI needed to stand in for that feedback loop convincingly.',
-    architecture:
-      'A Node.js API orchestrates interview sessions and persists transcripts, while a Python service handles response evaluation against a rubric built from the target role. WebRTC handles low-latency audio capture for spoken-answer interviews.',
-    engineeringChallenges: [
-      'Keeping evaluation latency low enough for a natural conversational pace, solved by streaming partial model output instead of waiting for full completions',
-      'Preventing generic, unhelpful feedback by grounding evaluation prompts in a structured rubric rather than open-ended scoring',
-    ],
-    keyLearnings: [
-      'Rubric-grounded prompts made evaluation far more consistent than open-ended "grade this answer" prompting.',
-      'Streaming partial responses mattered more for perceived quality than raw model accuracy.',
-      'Users trusted structured, categorized feedback noticeably more than a single overall score.',
-    ],
-    screenshots: [
-      { id: 'interview-session', caption: 'Live interview session with adaptive follow-up questions', src: null },
-      { id: 'feedback-report', caption: 'Structured feedback report broken down by category', src: null },
-    ],
-    performanceMetrics: [
-      { label: 'Avg. Feedback Time', value: '3.2s' },
-      { label: 'Question Bank', value: '600+' },
-    ],
-  },
+  techStack: [
+    'React',
+    'Node.js',
+    'Python',
+    'FastAPI',
+    'Machine Learning',
+    'MongoDB'
+  ],
+
+  github: 'https://github.com/Mani7005/Scanix',
+  apk: '/scanix_f.apk',
+
+  overview:
+    'Scanix uses machine learning to detect phishing links and scam messages, providing users with instant risk analysis and actionable security recommendations.',
+
+  problemStatement:
+    'Online scams and phishing attacks are becoming increasingly sophisticated, making it difficult for users to distinguish legitimate content from malicious attempts.',
+
+  architecture:
+    'A React frontend communicates with a Node.js backend that routes requests to a Python-based ML service. The prediction engine evaluates suspicious content and returns risk scores with explanations.',
+
+  engineeringChallenges: [
+    'Improving detection accuracy while minimizing false positives.',
+    'Designing a fast prediction pipeline for near real-time analysis.'
+  ],
+
+  keyLearnings: [
+    'Feature engineering significantly impacts phishing detection performance.',
+    'Clear risk explanations improve user trust more than confidence scores alone.',
+    'Separating the ML inference service from the API improves scalability.'
+  ],
+
+  performanceMetrics: [
+    { label: 'Detection Accuracy', value: '95%+' },
+    
+  ],
+},
   {
-    id: 'shardmesh',
-    name: 'ShardMesh',
-    status: 'active',
-    type: 'Distributed Systems · Storage Engine',
-    shortDescription:
-      'A horizontally-sharded key-value store built to explore consistent hashing, replication, and leader election from first principles.',
-    techStack: ['Rust', 'gRPC', 'Raft', 'RocksDB'],
-    github: 'https://github.com/',
-    liveDemo: null,
+  id: 'tamsc',
+  name: 'TAMSC',
+  status: 'online',
+  type: 'AI Research · Computer Vision',
 
-    overview:
-      'ShardMesh is a from-scratch distributed key-value store built to understand consistent hashing, replication, and consensus by implementing them, rather than only reading about them.',
-    problemStatement:
-      'Off-the-shelf distributed databases hide almost all of the interesting mechanics behind a clean API. The goal here was the opposite: build the sharding, replication, and leader election directly to understand the real trade-offs.',
-    architecture:
-      'Data is partitioned across nodes using consistent hashing with virtual nodes to keep shard distribution even as the cluster resizes. Each shard is replicated across three nodes using a Raft consensus group, with RocksDB as the local storage engine per replica.',
-    engineeringChallenges: [
-      'Split-brain risk during network partitions, addressed by enforcing quorum writes through Raft rather than optimistic replication',
-      'Hot-shard imbalance under skewed key access, mitigated with virtual node rebalancing',
-    ],
-    keyLearnings: [
-      'Implementing Raft from scratch made the purpose of quorum writes click in a way reading the paper alone never did.',
-      'Virtual nodes are a simple idea that meaningfully smooths out shard imbalance in practice.',
-      'Consensus systems fail in ways that are hard to reproduce without an explicit fault-injection harness.',
-    ],
-    screenshots: [
-      { id: 'cluster-topology', caption: 'Cluster topology with shard replicas across nodes', src: null },
-      { id: 'benchmark-results', caption: 'Latency benchmark under simulated node failure', src: null },
-    ],
-    performanceMetrics: [],
-  },
-];
+  shortDescription:
+    'A fog-robust scene text detection model using text-aware multi-scale contrastive learning to improve detection accuracy under adverse weather conditions.',
+
+  techStack: [
+    'Python',
+    'PyTorch',
+    'OpenCV',
+    'NumPy',
+    'Deep Learning',
+    'Computer Vision'
+  ],
+
+  github: 'https://github.com/',
+  liveDemo: null,
+
+  overview:
+    'Implemented and evaluated a research-driven scene text detection model that learns fog-invariant representations using multi-scale contrastive learning.',
+
+  problemStatement:
+    'Traditional scene text detectors experience significant performance degradation in foggy environments due to reduced visibility and low contrast.',
+
+  architecture:
+    'Built using a CNN-based backbone with Feature Pyramid Networks and text-aware multi-scale contrastive learning to align clear and foggy feature representations.',
+
+  engineeringChallenges: [
+    'Designing an effective contrastive learning strategy across multiple feature scales.',
+    'Training robustly with synthetic fog augmentation while preserving text features.'
+  ],
+
+  keyLearnings: [
+    'Multi-scale contrastive learning significantly improves feature robustness.',
+    'Proper fog augmentation is essential for real-world generalization.',
+    'Research implementation requires careful reproduction and extensive experimentation.'
+  ],
+
+  performanceMetrics: [
+    { label: 'Precision', value: '79.7%' },
+    { label: 'Recall', value: '78.6%' },
+    { label: 'F1 Score', value: '79.2%' },
+  ],
+},
+
+{
+  id: 'redrop',
+  name: 'Redrop',
+  status: 'online',
+  type: 'DBMS · Full-Stack Application',
+
+  shortDescription:
+    'A blood donation management system that connects donors with recipients using MySQL procedures, functions, triggers, and a Flask backend.',
+
+  techStack: [
+    'Flask',
+    'Python',
+    'MySQL',
+    'SQL',
+    'PL/SQL',
+    'HTML'
+  ],
+
+  github: 'https://github.com/Mani7005/redrop',
+  liveDemo: null,
+
+  overview:
+    'Developed a database-driven blood donation platform featuring donor search, availability tracking, and automated database operations using PL/SQL.',
+
+  problemStatement:
+    'Finding eligible blood donors quickly is challenging when donor availability and eligibility are not updated automatically.',
+
+  architecture:
+    'Built with a Flask backend connected to MySQL. Stored procedures, functions, cursors, and triggers handle donor search, availability updates, and dashboard statistics.',
+
+  engineeringChallenges: [
+    'Automating donor availability using database triggers.',
+    'Designing reusable stored procedures for efficient donor search.'
+  ],
+
+  keyLearnings: [
+    'Business logic can be efficiently handled inside the database using stored procedures.',
+    'Triggers help maintain data consistency automatically.',
+    'Proper database design simplifies backend development.'
+  ],
+
+  
+},
+]

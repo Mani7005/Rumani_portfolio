@@ -101,9 +101,7 @@ export default function ProjectDossier({ project, onClose }) {
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-glass-border px-6 py-5 sm:px-8">
           <div>
-            <p className="font-mono text-[9px] tracking-[0.06em] text-ink-muted/70 uppercase">
-              // CLASSIFIED ENGINEERING RECORD
-            </p>
+            
             <h3 className="mt-1 font-display text-2xl text-ink-primary sm:text-3xl">{project.name}</h3>
             <div className="mt-2 flex flex-wrap items-center gap-3">
               <ProjectStatus status={project.status} />
@@ -151,13 +149,7 @@ export default function ProjectDossier({ project, onClose }) {
             <BulletList items={project.keyLearnings} />
           </Section>
 
-          <Section label="SCREENSHOTS">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {project.screenshots.map((shot) => (
-                <ScreenshotTile key={shot.id} caption={shot.caption} src={shot.src} />
-              ))}
-            </div>
-          </Section>
+          
 
           {hasMetrics && (
             <Section label="PERFORMANCE METRICS">

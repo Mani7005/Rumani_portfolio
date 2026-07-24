@@ -37,9 +37,9 @@ export default function Projects() {
               Engineering Projects
             </h2>
             <p className="mt-2 max-w-md text-sm leading-relaxed text-ink-muted">
-              Classified engineering records. Press{' '}
+              Press{' '}
               <span className="font-mono text-[10px] text-cyan-core tracking-wider">ACCESS FILE</span>
-              {' '}on any entry for the full technical dossier.
+              {' '}on any entry for the full technical detail.
             </p>
           </div>
           <span className="hidden font-mono text-[8px] tracking-[0.3em] text-ink-muted/40 uppercase sm:block">
